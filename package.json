@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "npm run lint:tsc && npm run lint:eslint",
+    "lint:tsc": "tsc --build tsconfig.json .",
+    "lint:eslint": "next lint"
   },
   "dependencies": {
     "next": "12.2.4",
