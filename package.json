@@ -15,7 +15,11 @@
     "generateBuildId": "git rev-parse head | cut -c 1-7 2> /dev/null || echo 'development'",
     "generateEnv": "echo 'NEXT_PUBLIC_BUILD_VERSION='$(npm run -s generateVersion) > .env.local && echo 'NEXT_PUBLIC_BUILD_ID='$(npm run -s generateBuildId) >> .env.local",
     "docker:imagename": "echo 'imagename'",
-    "docker:tagname": "echo $(npm run -s repoLatestTag)-dev-$(npm run -s generateBuildId)-$(npm run -s repoStatus)"
+    "docker:tagname": "echo $(npm run -s repoLatestTag)-dev-$(npm run -s generateBuildId)-$(npm run -s repoStatus)",
+    "docker:build": "npm run generateEnv && docker build -t $(npm run -s docker:imagename):$(npm run -s docker:tagname) -f ./dockerfile .",
+    "docker:run": "docker run --rm -e 'PORT=3000' -p 3000:3000 -d --name $(npm run -s docker:imagename) $(npm run -s docker:imagename):$(npm run -s docker:tagname) && echo '\nGo to http://localhost:3000'",
+    "docker:stop": "docker container stop $(npm run -s docker:imagename)",
+    "docker:logs": "docker logs -f $(npm run -s docker:imagename)"
   },
   "dependencies": {
     "next": "12.2.4",
