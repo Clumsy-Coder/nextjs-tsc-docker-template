@@ -7,10 +7,6 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
-    if: |
-      startsWith(toJSON(github.event.head_commit.message), 'build(deps)') ||
-      startsWith(toJSON(github.event.head_commit.message), 'build(devDep)')
-
     steps:
       - uses: fastify/github-action-merge-dependabot@v3.0.0
         with:
