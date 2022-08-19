@@ -1,20 +1,67 @@
 import * as React from 'react';
-import clsx from 'clsx';
-import { useRouter } from 'next/router';
-import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link';
 import { styled } from '@mui/material/styles';
+import clsx from 'clsx';
+import NextLink, { LinkProps as NextLinkProps } from 'next/link';
+import { useRouter } from 'next/router';
+
+/* eslint-disable react/require-default-props */
+
+// A custom adapter component for Link from Material UI and NextJS
+// obtained from
+// https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/src/Link.tsx
+//
+// check
+// https://mui.com/material-ui/guides/routing/#next-js
+
+// ############################################################################################## //
 
 // Add support for the sx prop for consistency with the other branches.
 const Anchor = styled('a')({});
 
-interface NextLinkComposedProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    Omit<NextLinkProps, 'href' | 'as' | 'onClick' | 'onMouseEnter' | 'onTouchStart'> {
+type CustomAnchorLink = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
+type CustomNextjsLink = Omit<
+  NextLinkProps,
+  'href' | 'as' | 'onClick' | 'onMouseEnter' | 'onTouchStart'
+>;
+interface NextLinkComposedProps extends CustomAnchorLink, CustomNextjsLink {
+  /**
+   * Where to navigate to.
+   *
+   * Alias to 'href'.
+   * @see https://mui.com/material-ui/guides/routing/#next-js
+   */
   to: NextLinkProps['href'];
   linkAs?: NextLinkProps['as'];
 }
 
+/**
+ * Unstyled version of Link component.
+ * Responsible for handling navigation.
+ *
+ * @example
+ * ```javascript
+ * import Button from '@mui/material/Button';
+ * import { NextLinkComposed } from '@components/Link';
+ *
+ * export default function Index() {
+ *   return (
+ *     <Button
+ *       component={NextLinkComposed}
+ *       to={{
+ *         pathname: '/about',
+ *         query: { name: 'test' },
+ *       }}
+ *     >
+ *       Button link
+ *     </Button>
+ *   );
+ * }
+ *
+ * ```
+ *
+ * @see https://mui.com/material-ui/guides/routing/#next-js
+ */
 export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedProps>(
   function NextLinkComposed(props, ref) {
     const { to, linkAs, replace, scroll, shallow, prefetch, locale, ...other } = props;
@@ -36,17 +83,48 @@ export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComp
   },
 );
 
+// ############################################################################################## //
+
 export type LinkProps = {
   activeClassName?: string;
   as?: NextLinkProps['as'];
+  /**
+   * URL to navigate.
+   *
+   * Can be external link (Ex: https://github.com) or internal link (ex: navigate to About page)
+   *
+   * @see https://mui.com/material-ui/guides/routing/#next-js
+   */
   href: NextLinkProps['href'];
   linkAs?: NextLinkProps['as']; // Useful when the as prop is shallow by styled().
-  noLinkStyle?: boolean;
+  noLinkStyle: boolean | false;
 } & Omit<NextLinkComposedProps, 'to' | 'linkAs' | 'href'> &
   Omit<MuiLinkProps, 'href'>;
 
-// A styled version of the Next.js Link component:
-// https://nextjs.org/docs/api-reference/next/link
+/**
+ * A styled version of the Next.js Link component:
+ *
+ * @example
+ * ```javascript
+ * import Link from '@components/Link';
+ *
+ * export default function Index() {
+ *   return (
+ *     <Link
+ *       href={{
+ *         pathname: '/about',
+ *         query: { name: 'test' },
+ *       }}
+ *     >
+ *       Link
+ *     </Link>
+ *   );
+ * }
+ *
+ * ```
+ * @see https://nextjs.org/docs/api-reference/next/link
+ * @see https://mui.com/material-ui/guides/routing/#next-js
+ */
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props, ref) {
   const {
     activeClassName = 'active',
@@ -100,4 +178,3 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
 });
 
 export default Link;
-
