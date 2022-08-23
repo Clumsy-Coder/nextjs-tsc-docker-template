@@ -66,6 +66,7 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
     outputs:
+      NEXT_VERSION: ${{ steps.dockerBuild-output.outputs.NEXT_VERSION }}
       new-release-published: ${{ steps.get-next-version.outputs.new-release-published }}
       new-release-version: ${{ steps.get-next-version.outputs.new-release-version }}
     steps:
@@ -95,13 +96,15 @@ jobs:
         if: |
           steps.get-next-version.outputs.new-release-published == '' ||
           steps.get-next-version.outputs.new-release-published == 'false'
-        run: node -p "require('./package').version" |  awk '{print "NEXT_VERSION=" $1}' >> $GITHUB_ENV
+        run: |
+          echo $(node -p "require('./package').version")
+          node -p "require('./package').version" |  awk '{print "NEXT_VERSION=" $1}' >> $GITHUB_ENV
 
       - name: Set NEXT_VERSION if there's a NEW release
         if: steps.get-next-version.outputs.new-release-published == 'true'
         run: |
-          ${{ needs.extract-envs.outputs.new-release-version }}
-          echo "NEXT_VERSION=${{ needs.extract-envs.outputs.NEXT_VERSION }}" >> $GITHUB_ENV
+          echo ${{ steps.get-next-version.outputs.new-release-version }}
+          echo "NEXT_VERSION=${{ steps.get-next-version.outputs.new-release-version }}" >> $GITHUB_ENV
 
       - name: Set Environment Variables
         run: |
