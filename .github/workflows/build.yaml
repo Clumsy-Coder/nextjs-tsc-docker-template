@@ -187,6 +187,7 @@ jobs:
 
       - name: semantic-release
         run: npx semantic-release --ci
+        # use personal access token with 'public repo' permission to push tags on protected branches
         env:
           GITHUB_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
 ####################################################################################################
